@@ -4,70 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Print Price Calculator</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 30px; background-color: #f4f4f4; }
-        .container { background: white; padding: 20px; border-radius: 10px; width: 300px; margin: auto; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
-        input, select, button { margin: 10px; padding: 10px; width: 90%; border-radius: 5px; border: 1px solid #ddd; }
-        button { background: #007BFF; color: white; font-size: 16px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #result { font-size: 20px; font-weight: bold; margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>3D Print Price Calculator</h2>
-        <label>Material Cost (AED/kg):</label>
-        <input type="number" id="materialCost" value="100" min="50" max="500" step="5">
-        
-        <label>Weight (g):</label>
-        <input type="number" id="weight" placeholder="Enter weight in grams">
-
-        <label>Print Time (hours):</label>
-        <input type="number" id="printTime" placeholder="Enter print time">
-
-        <label>Packaging:</label>
-        <select id="packaging">
-            <option value="2">Small (2 AED)</option>
-            <option value="3">Medium (3 AED)</option>
-            <option value="5">Large (5 AED)</option>
-            <option value="10">XL (10 AED)</option>
-        </select>
-
-        <label>Profit Margin (%):</label>
-        <select id="profitMargin">
-            <option value="0.4">40%</option>
-            <option value="0.5" selected>50%</option>
-            <option value="0.6">60%</option>
-        </select>
-
-        <button onclick="calculatePrice()">Calculate Price</button>
-
-        <p id="result"></p>
-    </div>
-
     <script>
         function calculatePrice() {
+            // Get user inputs
             let materialCost = parseFloat(document.getElementById("materialCost").value);
             let weight = parseFloat(document.getElementById("weight").value);
             let printTime = parseFloat(document.getElementById("printTime").value);
             let packaging = parseFloat(document.getElementById("packaging").value);
-            let profitMargin = parseFloat(document.getElementById("profitMargin").value);
+            let hasPostProcessing = document.getElementById("postProcess").checked;
+            let postProcessingTime = hasPostProcessing ? parseFloat(document.getElementById("postTime").value) : 0;
 
-            if (isNaN(weight) || isNaN(printTime)) {
-                document.getElementById("result").innerHTML = "Please enter valid values.";
-                return;
-            }
+            // Constants
+            let failureRate = 0.10;  // 10% extra material cost
+            let maintenanceCost = 0.7;  // AED per hour
+            let electricityRate = 0.0075;  // AED per kWh
+            let laborCost = 40 / 60;  // AED per minute
+            let profitMargin = 1.6;  // 60% profit
+            let transactionFee = 1.044; // Shopify 4.4% transaction fee
 
-            let materialCostTotal = (weight / 1000) * materialCost * 1.1; // Includes 10% extra for failed prints
-            let maintenanceCost = printTime * 0.7;
-            let electricityCost = printTime * 0.35 * 0.075;
-            let processingFee = 1.0474;
+            // Calculate costs
+            let materialTotal = (weight / 1000) * materialCost * (1 + failureRate);
+            let machineCost = printTime * maintenanceCost;
+            let electricityCost = printTime * electricityRate;
+            let postProcessingCost = postProcessingTime * laborCost;
+            
+            let totalCost = materialTotal + machineCost + electricityCost + postProcessingCost + packaging;
+            let finalPrice = totalCost * profitMargin * transactionFee;
 
-            let totalCost = (materialCostTotal + maintenanceCost + electricityCost + packaging) * processingFee;
-            let sellingPrice = totalCost * (1 + profitMargin);
+            // Display result
+            document.getElementById("result").innerHTML = "Selling Price: " + finalPrice.toFixed(2) + " AED";
+        }
 
-            document.getElementById("result").innerHTML = `Selling Price: <strong>${sellingPrice.toFixed(2)} AED</strong>`;
+        function togglePostProcessing() {
+            document.getElementById("postProcessingTime").style.display = document.getElementById("postProcess").checked ? "block" : "none";
         }
     </script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h2, h3 { color: #333; }
+        label { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h2>3D Print Price Calculator</h2>
+    
+    <label>Material Cost (AED/kg):</label>
+    <input type="number" id="materialCost" value="100"><br><br>
+
+    <label>Weight (g):</label>
+    <input type="number" id="weight" value="50"><br><br>
+
+    <label>Print Time (hours):</label>
+    <input type="number" id="printTime" value="2"><br><br>
+
+    <label>Packaging Cost (AED):</label>
+    <select id="packaging">
+        <option value="2">Small - 2 AED</option>
+        <option value="3">Medium - 3 AED</option>
+        <option value="5">Large - 5 AED</option>
+        <option value="10">XL - 10 AED</option>
+    </select><br><br>
+
+    <input type="checkbox" id="postProcess" onclick="togglePostProcessing()"> <label>Include Post-Processing?</label><br>
+    
+    <div id="postProcessingTime" style="display:none;">
+        <label>Post-Processing Time (minutes):</label>
+        <input type="number" id="postTime" value="10"><br><br>
+    </div>
+
+    <button onclick="calculatePrice()">Calculate</button>
+
+    <h3 id="result">Selling Price: -- AED</h3>
+
+    <!-- Reference Table with Constants -->
+    <h3>Pricing Factors & Constants</h3>
+    <table>
+        <tr>
+            <th>Factor</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Material Failure Coverage</td>
+            <td>10% extra material cost</td>
+        </tr>
+        <tr>
+            <td>Machine Maintenance Cost</td>
+            <td>0.7 AED per hour</td>
+        </tr>
+        <tr>
+            <td>Electricity Cost</td>
+            <td>7.5 fils (0.0075 AED) per kWh</td>
+        </tr>
+        <tr>
+            <td>Labor Cost</td>
+            <td>40 AED per hour (0.67 AED per minute)</td>
+        </tr>
+        <tr>
+            <td>Profit Margin</td>
+            <td>60% (1.6 multiplier)</td>
+        </tr>
+        <tr>
+            <td>Shopify Transaction Fee</td>
+            <td>4.4% (1.044 multiplier)</td>
+        </tr>
+        <tr>
+            <td>Packaging Fees</td>
+            <td>Small: 2 AED, Medium: 3 AED, Large: 5 AED, XL: 10 AED</td>
+        </tr>
+    </table>
 </body>
 </html>
