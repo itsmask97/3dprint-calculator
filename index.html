@@ -6,7 +6,7 @@
     <title>3D Print Price Calculator</title>
     <script>
         function calculatePrice() {
-            // Get user inputs
+            let partName = document.getElementById("partName").value;
             let materialCost = parseFloat(document.getElementById("materialCost").value);
             let weight = parseFloat(document.getElementById("weight").value);
             let printTime = parseFloat(document.getElementById("printTime").value);
@@ -30,18 +30,42 @@
             let machineCost = printTime * maintenanceCost;
             let electricityCost = printTime * electricityRate;
             let postProcessingCost = postProcessingTime * laborCost;
-            
+
             let totalCost = materialTotal + machineCost + electricityCost + postProcessingCost + packaging;
             let finalPrice = totalCost * profitMultiplier * shopifyMultiplier * vatMultiplier;
 
             // Display result
             document.getElementById("result").innerHTML = "Selling Price: " + finalPrice.toFixed(2) + " AED";
+            document.getElementById("totalCost").value = totalCost.toFixed(2);
+            document.getElementById("sellingPrice").value = finalPrice.toFixed(2);
+        }
+
+        function saveInquiry() {
+            let partName = document.getElementById("partName").value;
+            let weight = document.getElementById("weight").value;
+            let printTime = document.getElementById("printTime").value;
+            let totalCost = document.getElementById("totalCost").value;
+            let sellingPrice = document.getElementById("sellingPrice").value;
+
+            if (partName === "" || weight === "" || printTime === "" || sellingPrice === "") {
+                alert("Please calculate the price before saving.");
+                return;
+            }
+
+            fetch("https://script.google.com/macros/s/AKfycby2o1HNmomK7sB434P40JHf20sBFkI2WibSNQcqY8hqvxGP4A_qGggX0LtBluhBZkdE/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ partName, weight, printTime, totalCost, sellingPrice })
+            })
+            .then(response => response.text())
+            .then(data => alert("Saved Successfully!"));
         }
 
         function togglePostProcessing() {
             document.getElementById("postProcessingTime").style.display = document.getElementById("postProcess").checked ? "block" : "none";
         }
     </script>
+
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
         h2, h3 { color: #333; text-align: center; }
@@ -51,14 +75,14 @@
         button:hover { background-color: #0056b3; }
         .checkbox-group { display: flex; justify-content: space-between; margin-top: 10px; }
         .checkbox-group label { font-weight: normal; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
     <h2>3D Print Price Calculator</h2>
-    
+
+    <label>Part Name:</label>
+    <input type="text" id="partName" placeholder="Enter Part Name">
+
     <label>Material Cost (AED/kg):</label>
     <input type="number" id="materialCost" value="100">
 
@@ -85,7 +109,7 @@
     </select>
 
     <input type="checkbox" id="postProcess" onclick="togglePostProcessing()"> <label>Include Post-Processing?</label>
-    
+
     <div id="postProcessingTime" style="display:none;">
         <label>Post-Processing Time (minutes):</label>
         <input type="number" id="postTime" value="10">
@@ -100,45 +124,9 @@
 
     <h3 id="result">Selling Price: -- AED</h3>
 
-    <!-- Reference Table with Constants -->
-    <h3>Pricing Factors & Constants</h3>
-    <table>
-        <tr>
-            <th>Factor</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td>Material Failure Coverage</td>
-            <td>10% extra material cost</td>
-        </tr>
-        <tr>
-            <td>Machine Maintenance Cost</td>
-            <td>0.7 AED per hour</td>
-        </tr>
-        <tr>
-            <td>Electricity Cost</td>
-            <td>7.5 fils (0.0075 AED) per kWh</td>
-        </tr>
-        <tr>
-            <td>Labor Cost</td>
-            <td>40 AED per hour (0.67 AED per minute)</td>
-        </tr>
-        <tr>
-            <td>Profit Margin</td>
-            <td>30%-60% (User selects)</td>
-        </tr>
-        <tr>
-            <td>Shopify Transaction Fee</td>
-            <td>4.4% (Optional)</td>
-        </tr>
-        <tr>
-            <td>VAT</td>
-            <td>5% (Optional)</td>
-        </tr>
-        <tr>
-            <td>Packaging Fees</td>
-            <td>Small: 2 AED, Medium: 3 AED, Large: 5 AED, XL: 10 AED</td>
-        </tr>
-    </table>
+    <input type="hidden" id="totalCost">
+    <input type="hidden" id="sellingPrice">
+
+    <button onclick="saveInquiry()">Save Inquiry</button>
 </body>
 </html>
