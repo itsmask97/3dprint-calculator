@@ -117,9 +117,10 @@
 
     <div class="reference-table">
         <h3>Reference Values</h3>
-        <p>Machine Rate: 0.5 AED/h</p>
+        <p>Machine Rate: 0.7 AED/h</p>
+        <p>Processing-Fee : 30 AED/h</p>
         <p>Failure Rate: 10%</p>
-        <p>Shopify Fee: 4.4% (if selected)</p>
+        <p>Shopify Fee: 4.5% (if selected)</p>
         <p>VAT: 5% (if selected)</p>
     </div>
 
@@ -134,7 +135,7 @@
             let vat = document.getElementById("vat").checked;
 
             // Base cost
-            let cost = (materialCost / 1000) * weight + (printTime * 0.5);
+            let cost = (materialCost / 1000) * weight + (printTime * 0.7);
             
             // Add failure rate (10%)
             cost *= 1.1;
@@ -146,7 +147,7 @@
             let sellingPrice = cost * (1 + profitMargin);
 
             // Add Shopify fee if selected
-            if (shopifyFee) sellingPrice *= 1.044;
+            if (shopifyFee) sellingPrice *= 1.045;
 
             // Add VAT if selected
             if (vat) sellingPrice *= 1.05;
@@ -173,11 +174,11 @@
                 data: [
                     {
                         "Part Name": partName,
-                        "Weight": weight,
-                        "Time": printTime,
-                        "Cost": cost,
-                        "Price": price,
-                        "Timestamp": new Date().toLocaleString()  // optional, if you have a Timestamp column
+                        "Weight (g)": weight,
+                        "Time (h)": printTime,
+                        "Cost (AED)": cost,
+                        "Price (AED)": price,
+                        "Date": new Date().toLocaleDateString()
                     }
                 ]
             };
