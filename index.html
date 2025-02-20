@@ -161,27 +161,29 @@
             let printTime = document.getElementById("printTime").value;
             let cost = document.getElementById("totalCost").innerText;
             let price = document.getElementById("sellingPrice").innerText;
-
-            fetch("https://script.google.com/macros/s/AKfycbyniz66zBmBZkmosjkGOnsFiJJnSqOEfZiwFQReNRrSoJJUnDajDKos7qE8NCUizbCv/exec", {
+        
+            fetch("https://script.google.com/macros/s/AKfycbx-PIz1Tmg6wSclupd9JVTRDdNhO_4TcNyZx-JR9-e6Av9Yr-JNfTmsTVbEtCW1jwtX/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    partName: partName,
-                    weight: weight,
-                    time: printTime,
-                    cost: cost,
-                    price: price
+                    partName: partName.trim(),
+                    weight: weight.trim(),
+                    time: printTime.trim(),
+                    cost: cost.trim(),
+                    price: price.trim()
                 })
             })
             .then(response => response.text())
             .then(data => {
+                console.log("Server Response: ", data);
                 alert("Saved successfully!");
             })
             .catch(error => {
-                console.error("Error:", error);
+                console.error("Fetch Error:", error);
                 alert("Error saving data!");
             });
         }
+
     </script>
 
 </body>
