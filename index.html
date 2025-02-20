@@ -78,6 +78,9 @@
 
         <label>Print Time (h):</label>
         <input type="number" id="printTime" placeholder="e.g. 5.5">
+        
+        <label>Extra Fees (AED):</label>
+        <input type="number" id="extraFees" placeholder="0" value="0">
 
         <label>Post Processing?</label>
         <select id="postProcessing">
@@ -133,6 +136,7 @@
             let profitMargin = parseFloat(document.getElementById("profitMargin").value) / 100;
             let shopifyFee = document.getElementById("shopifyFee").checked;
             let vat = document.getElementById("vat").checked;
+            let extraFees = parseFloat(document.getElementById("extraFees").value) || 0;
 
             // Base cost
             let cost = (materialCost / 1000) * weight + (printTime * 0.7);
@@ -140,6 +144,9 @@
             // Add failure rate (10%)
             cost *= 1.1;
 
+            // Add extra fees
+            cost += extraFees;
+            
             // Add post-processing time (converted to AED)
             cost += (postProcessing / 60) * 30;
 
