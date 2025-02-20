@@ -3,130 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Print Price Calculator</title>
+    <title>3D Print Cost Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .reference-table {
+            margin-top: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>3D Print Cost Calculator</h2>
+
+        <label>Part Name:</label>
+        <input type="text" id="partName" placeholder="Enter part name">
+
+        <label>Material Cost (AED/kg):</label>
+        <input type="number" id="materialCost" placeholder="e.g. 100">
+
+        <label>Weight (g):</label>
+        <input type="number" id="weight" placeholder="e.g. 50">
+
+        <label>Print Time (h):</label>
+        <input type="number" id="printTime" placeholder="e.g. 5.5">
+
+        <label>Post Processing?</label>
+        <select id="postProcessing">
+            <option value="0">No</option>
+            <option value="5">5 min</option>
+            <option value="10">10 min</option>
+            <option value="15">15 min</option>
+        </select>
+
+        <label>Profit Margin:</label>
+        <select id="profitMargin">
+            <option value="30">30%</option>
+            <option value="40">40%</option>
+            <option value="50">50%</option>
+            <option value="60">60%</option>
+        </select>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="shopifyFee">
+            <label for="shopifyFee">Include Shopify Fee (4.4%)</label>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="vat">
+            <label for="vat">Include VAT (5%)</label>
+        </div>
+
+        <button onclick="calculateCost()">Calculate</button>
+
+        <h3>Results:</h3>
+        <p>Total Cost: <strong id="totalCost">-</strong> AED</p>
+        <p>Selling Price: <strong id="sellingPrice">-</strong> AED</p>
+
+        <button onclick="saveInquiry()">Save to Google Sheets</button>
+    </div>
+
+    <div class="reference-table">
+        <h3>Reference Values</h3>
+        <p>Machine Rate: 0.5 AED/h</p>
+        <p>Failure Rate: 10%</p>
+        <p>Shopify Fee: 4.4% (if selected)</p>
+        <p>VAT: 5% (if selected)</p>
+    </div>
+
     <script>
-        function calculatePrice() {
-            let partName = document.getElementById("partName").value;
+        function calculateCost() {
             let materialCost = parseFloat(document.getElementById("materialCost").value);
             let weight = parseFloat(document.getElementById("weight").value);
             let printTime = parseFloat(document.getElementById("printTime").value);
-            let packaging = parseFloat(document.getElementById("packaging").value);
-            let profitMultiplier = parseFloat(document.getElementById("profitMargin").value);
-            let hasPostProcessing = document.getElementById("postProcess").checked;
-            let postProcessingTime = hasPostProcessing ? parseFloat(document.getElementById("postTime").value) : 0;
-            let includeShopify = document.getElementById("shopifyFee").checked;
-            let includeVAT = document.getElementById("vatFee").checked;
+            let postProcessing = parseFloat(document.getElementById("postProcessing").value);
+            let profitMargin = parseFloat(document.getElementById("profitMargin").value) / 100;
+            let shopifyFee = document.getElementById("shopifyFee").checked;
+            let vat = document.getElementById("vat").checked;
 
-            // Constants
-            let failureRate = 0.10;  // 10% extra material cost
-            let maintenanceCost = 0.7;  // AED per hour
-            let electricityRate = 0.0075;  // AED per kWh
-            let laborCost = 40 / 60;  // AED per minute
-            let shopifyMultiplier = includeShopify ? 1.044 : 1;  // Apply Shopify fee if checked
-            let vatMultiplier = includeVAT ? 1.05 : 1;  // Apply VAT if checked
+            // Base cost
+            let cost = (materialCost / 1000) * weight + (printTime * 0.5);
+            
+            // Add failure rate (10%)
+            cost *= 1.1;
 
-            // Calculate costs
-            let materialTotal = (weight / 1000) * materialCost * (1 + failureRate);
-            let machineCost = printTime * maintenanceCost;
-            let electricityCost = printTime * electricityRate;
-            let postProcessingCost = postProcessingTime * laborCost;
+            // Add post-processing time (converted to AED)
+            cost += (postProcessing / 60) * 30;
 
-            let totalCost = materialTotal + machineCost + electricityCost + postProcessingCost + packaging;
-            let finalPrice = totalCost * profitMultiplier * shopifyMultiplier * vatMultiplier;
+            // Calculate selling price with profit margin
+            let sellingPrice = cost * (1 + profitMargin);
 
-            // Display result
-            document.getElementById("result").innerHTML = "Selling Price: " + finalPrice.toFixed(2) + " AED";
-            document.getElementById("totalCost").value = totalCost.toFixed(2);
-            document.getElementById("sellingPrice").value = finalPrice.toFixed(2);
+            // Add Shopify fee if selected
+            if (shopifyFee) sellingPrice *= 1.044;
+
+            // Add VAT if selected
+            if (vat) sellingPrice *= 1.05;
+
+            // Display results
+            document.getElementById("totalCost").innerText = cost.toFixed(2);
+            document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2);
         }
 
         function saveInquiry() {
             let partName = document.getElementById("partName").value;
             let weight = document.getElementById("weight").value;
             let printTime = document.getElementById("printTime").value;
-            let totalCost = document.getElementById("totalCost").value;
-            let sellingPrice = document.getElementById("sellingPrice").value;
-
-            if (partName === "" || weight === "" || printTime === "" || sellingPrice === "") {
-                alert("Please calculate the price before saving.");
-                return;
-            }
+            let cost = document.getElementById("totalCost").innerText;
+            let price = document.getElementById("sellingPrice").innerText;
 
             fetch("https://script.google.com/macros/s/AKfycby2o1HNmomK7sB434P40JHf20sBFkI2WibSNQcqY8hqvxGP4A_qGggX0LtBluhBZkdE/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ partName, weight, printTime, totalCost, sellingPrice })
+                body: JSON.stringify({
+                    partName: partName,
+                    weight: weight,
+                    time: printTime,
+                    cost: cost,
+                    price: price
+                })
             })
             .then(response => response.text())
-            .then(data => alert("Saved Successfully!"));
-        }
-
-        function togglePostProcessing() {
-            document.getElementById("postProcessingTime").style.display = document.getElementById("postProcess").checked ? "block" : "none";
+            .then(data => {
+                alert("Saved successfully!");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error saving data!");
+            });
         }
     </script>
 
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
-        h2, h3 { color: #333; text-align: center; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input, select, button { width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; }
-        button { background-color: #007BFF; color: white; border: none; cursor: pointer; margin-top: 15px; }
-        button:hover { background-color: #0056b3; }
-        .checkbox-group { display: flex; justify-content: space-between; margin-top: 10px; }
-        .checkbox-group label { font-weight: normal; font-size: 14px; }
-    </style>
-</head>
-<body>
-    <h2>3D Print Price Calculator</h2>
-
-    <label>Part Name:</label>
-    <input type="text" id="partName" placeholder="Enter Part Name">
-
-    <label>Material Cost (AED/kg):</label>
-    <input type="number" id="materialCost" value="100">
-
-    <label>Weight (g):</label>
-    <input type="number" id="weight" value="50">
-
-    <label>Print Time (hours):</label>
-    <input type="number" id="printTime" value="2">
-
-    <label>Packaging Cost (AED):</label>
-    <select id="packaging">
-        <option value="2">Small - 2 AED</option>
-        <option value="3">Medium - 3 AED</option>
-        <option value="5">Large - 5 AED</option>
-        <option value="10">XL - 10 AED</option>
-    </select>
-
-    <label>Profit Margin:</label>
-    <select id="profitMargin">
-        <option value="1.3">30%</option>
-        <option value="1.4">40%</option>
-        <option value="1.5">50%</option>
-        <option value="1.6" selected>60%</option>
-    </select>
-
-    <input type="checkbox" id="postProcess" onclick="togglePostProcessing()"> <label>Include Post-Processing?</label>
-
-    <div id="postProcessingTime" style="display:none;">
-        <label>Post-Processing Time (minutes):</label>
-        <input type="number" id="postTime" value="10">
-    </div>
-
-    <div class="checkbox-group">
-        <label><input type="checkbox" id="shopifyFee"> Include Shopify Fee (4.4%)</label>
-        <label><input type="checkbox" id="vatFee"> Include VAT (5%)</label>
-    </div>
-
-    <button onclick="calculatePrice()">Calculate</button>
-
-    <h3 id="result">Selling Price: -- AED</h3>
-
-    <input type="hidden" id="totalCost">
-    <input type="hidden" id="sellingPrice">
-
-    <button onclick="saveInquiry()">Save Inquiry</button>
 </body>
 </html>
