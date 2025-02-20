@@ -67,9 +67,6 @@
     <div class="container">
         <h2>3D Print Cost Calculator</h2>
 
-        <label>Part Name:</label>
-        <input type="text" id="partName" placeholder="Enter part name">
-
         <label>Material Cost (AED/kg):</label>
         <input type="number" id="materialCost" placeholder="e.g. 100" value="100">
 
@@ -122,6 +119,9 @@
         <p>Total Cost: <strong id="totalCost">-</strong> AED</p>
         <p>Selling Price: <strong id="sellingPrice">-</strong> AED</p>
 
+        <label>Part Name:</label>
+        <input type="text" id="partName" placeholder="Enter part name">
+        
         <!-- Button now sends data to SheetDB instead of Google Apps Script -->
         <button onclick="saveInquiry()">Save to Google Sheets</button>
     </div>
