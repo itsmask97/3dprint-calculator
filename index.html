@@ -111,6 +111,7 @@
         <p>Total Cost: <strong id="totalCost">-</strong> AED</p>
         <p>Selling Price: <strong id="sellingPrice">-</strong> AED</p>
 
+        <!-- Button now sends data to SheetDB instead of Google Apps Script -->
         <button onclick="saveInquiry()">Save to Google Sheets</button>
     </div>
 
@@ -155,27 +156,40 @@
             document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2);
         }
 
+        // Replace the old Google Apps Script fetch with SheetDB
         function saveInquiry() {
-            let partName = document.getElementById("partName").value;
-            let weight = document.getElementById("weight").value;
-            let printTime = document.getElementById("printTime").value;
-            let cost = document.getElementById("totalCost").innerText;
-            let price = document.getElementById("sellingPrice").innerText;
-        
-            fetch("https://script.google.com/macros/s/AKfycbzylsuLfh6qO1OBk_2i_o1XRHz54t78G4K7R77VKq5y8JzRBjOAcgc15sN8kOMxN8Jy/exec", {
+            let partName  = document.getElementById("partName").value.trim();
+            let weight    = document.getElementById("weight").value.trim();
+            let printTime = document.getElementById("printTime").value.trim();
+            let cost      = document.getElementById("totalCost").innerText.trim();
+            let price     = document.getElementById("sellingPrice").innerText.trim();
+
+            // SheetDB endpoint (make sure your Sheet column headers match below!)
+            const sheetdbUrl = "https://sheetdb.io/api/v1/0p74ykwl0aai4";
+
+            // Format data according to SheetDB docs
+            // "data" should be an array of objects, each matching your sheet columns
+            const payload = {
+                data: [
+                    {
+                        "Part Name": partName,
+                        "Weight": weight,
+                        "Time": printTime,
+                        "Cost": cost,
+                        "Price": price,
+                        "Timestamp": new Date().toLocaleString()  // optional, if you have a Timestamp column
+                    }
+                ]
+            };
+
+            fetch(sheetdbUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    partName: partName.trim(),
-                    weight: weight.trim(),
-                    time: printTime.trim(),
-                    cost: cost.trim(),
-                    price: price.trim()
-                })
+                body: JSON.stringify(payload)
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                console.log("Server Response: ", data);
+                console.log("SheetDB response:", data);
                 alert("Saved successfully!");
             })
             .catch(error => {
@@ -183,7 +197,6 @@
                 alert("Error saving data!");
             });
         }
-
     </script>
 
 </body>
