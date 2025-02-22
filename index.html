@@ -193,7 +193,7 @@
             let size  = document.getElementById("packaging").value.trim();
             let extraFees = document.getElementById("extraFees").value.trim();
             let cost      = document.getElementById("totalCost").innerText.trim();
-            let profitMargin    = document.getElementById("profitMargin").innerText.trim();
+            let profitMargin    = document.getElementById("profitMargin").value.trim();
             let price     = document.getElementById("sellingPrice").innerText.trim();
             
             // SheetDB endpoint (make sure your Sheet column headers match below!)
@@ -208,7 +208,7 @@
                         "Material": material,
                         "Weight (g)": weight,
                         "Time (h)": printTime,
-                        "Package Size": size,
+                        "Package Cost": size,
                         "Extra Fees (AED)": extraFees,
                         "Cost (AED)": cost,
                         "Margin": profitMargin,
