@@ -95,6 +95,14 @@
             <option value="15">15 min</option>
         </select>
 
+        <label>Packaging</label>
+        <select id="packaging">
+            <option value="3">Small</option>
+            <option value="5">Medium</option>
+            <option value="7">Large</option>
+            <option value="15">Special</option>
+        </select>
+
         <label>Profit Margin:</label>
         <select id="profitMargin">
             <option value="60">60%</option>
@@ -141,6 +149,7 @@
             let weight = parseFloat(document.getElementById("weight").value);
             let printTime = parseFloat(document.getElementById("printTime").value);
             let postProcessing = parseFloat(document.getElementById("postProcessing").value);
+            let packaging = parseFloat(document.getElementById("packaging").value);
             let profitMargin = parseFloat(document.getElementById("profitMargin").value) / 100;
             let shopifyFee = document.getElementById("shopifyFee").checked;
             let vat = document.getElementById("vat").checked;
@@ -158,6 +167,9 @@
             // Add post-processing time (converted to AED)
             cost += (postProcessing / 60) * 30;
 
+            // Packaging fees
+            cost += packaging;
+            
             // Calculate selling price with profit margin
             let sellingPrice = cost * (1 + profitMargin);
 
