@@ -190,8 +190,10 @@
             let material     = document.getElementById("material").value.trim();
             let weight    = document.getElementById("weight").value.trim();
             let printTime = document.getElementById("printTime").value.trim();
+            let size  = document.getElementById("packaging").value.trim();
             let extraFees = document.getElementById("extraFees").value.trim();
             let cost      = document.getElementById("totalCost").innerText.trim();
+            let profitMargin    = document.getElementById("profitMargin").innerText.trim();
             let price     = document.getElementById("sellingPrice").innerText.trim();
             
             // SheetDB endpoint (make sure your Sheet column headers match below!)
@@ -206,8 +208,10 @@
                         "Material": material,
                         "Weight (g)": weight,
                         "Time (h)": printTime,
+                        "Package Size": size,
                         "Extra Fees (AED)": extraFees,
                         "Cost (AED)": cost,
+                        "Margin": profitMargin,
                         "Price (AED)": price,
                         "Date": new Date().toLocaleDateString()
                     }
