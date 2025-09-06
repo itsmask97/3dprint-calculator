@@ -1,239 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>3D Print Cost Calculator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 10px;
-            background-color: #f5f5f5;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 10px; background-color: #f5f5f5; }
         .container {
-            max-width: 400px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 420px; margin: auto; background: white; padding: 20px;
+            border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-        }
-        .checkbox-group input {
-            width: auto;
-            margin-right: 5px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
-        }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .checkbox-group { display: flex; align-items: center; margin-top: 10px; }
+        .checkbox-group input { width: auto; margin-right: 8px; }
+        button { width: 100%; padding: 10px; margin-top: 15px; background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #218838; }
         .reference-table {
-            margin-top: 20px;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            max-width: 420px; margin: 20px auto 0; padding: 10px; background: white;
+            border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .muted { color:#666; font-size: 12px; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>3D Print Cost Calculator</h2>
+<div class="container">
+    <h2>3D Print Cost Calculator</h2>
 
-        <label>Material</label>
-        <select id="material">
-            <option value="PLA+">PLA+</option>
-            <option value="PLA">PLA</option>
-            <option value="PETG">PETG</option>
-            <option value="ABS">ABS</option>
-        </select>
+    <label>Material</label>
+    <select id="material">
+        <option value="PLA+">PLA+</option>
+        <option value="PLA">PLA</option>
+        <option value="PETG">PETG</option>
+        <option value="ABS">ABS</option>
+    </select>
 
-        <label>Material Cost (AED/kg):</label>
-        <input type="number" id="materialCost" placeholder="e.g. 100" value="100">
-        
-        <label>Weight (g):</label>
-        <input type="number" id="weight" placeholder="e.g. 50">
+    <label>Material Cost (AED/kg):</label>
+    <input type="number" id="materialCost" placeholder="e.g. 100" value="100" step="0.01"/>
 
-        <label>Print Time (h):</label>
-        <input type="number" id="printTime" placeholder="e.g. 5.5">
-        
-        <label>Extra Fees (AED):</label>
-        <input type="number" id="extraFees" placeholder="0" value="0">
-
-        <label>Post Processing?</label>
-        <select id="postProcessing">
-            <option value="0">No</option>
-            <option value="5">5 min</option>
-            <option value="10">10 min</option>
-            <option value="15">15 min</option>
-        </select>
-
-        <label>Packaging</label>
-        <select id="packaging">
-            <option value="3">Small</option>
-            <option value="5">Medium</option>
-            <option value="7">Large</option>
-            <option value="15">Special</option>
-        </select>
-
-        <label>Profit Margin:</label>
-        <select id="profitMargin">
-            <option value="60">60%</option>
-            <option value="50">50%</option>
-            <option value="40">40%</option>
-            <option value="30">30%</option>
-        </select>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="shopifyFee">
-            <label for="shopifyFee">Include Shopify Fee (4.4%)</label>
+    <div class="row-2">
+        <div>
+            <label>Weight (g):</label>
+            <input type="number" id="weight" placeholder="e.g. 50" step="0.01"/>
         </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="vat">
-            <label for="vat">Include VAT (5%)</label>
+        <div>
+            <label>Print Time (h):</label>
+            <input type="number" id="printTime" placeholder="e.g. 5.5" step="0.01"/>
         </div>
-
-        <button onclick="calculateCost()">Calculate</button>
-
-        <h3>Results:</h3>
-        <p>Total Cost: <strong id="totalCost">-</strong> AED</p>
-        <p>Selling Price: <strong id="sellingPrice">-</strong> AED</p>
-
-        <label>Part Name:</label>
-        <input type="text" id="partName" placeholder="Enter part name">
-        
-        <!-- Button now sends data to SheetDB instead of Google Apps Script -->
-        <button onclick="saveInquiry()">Save to Google Sheets</button>
     </div>
 
-    <div class="reference-table">
-        <h3>Reference Values</h3>
-        <p>Machine Rate: 0.7 AED/h</p>
-        <p>Processing-Fee : 200 AED/h</p>
-        <p>Failure Rate: 10%</p>
-        <p>Shopify Fee: 4.5% (if selected)</p>
-        <p>VAT: 5% (if selected)</p>
+    <div class="row-2">
+        <div>
+            <label>Preparation Time (h):</label>
+            <input type="number" id="prepTime" placeholder="e.g. 0.25" value="0" step="0.01"/>
+        </div>
+        <div>
+            <label>Post-Processing (min):</label>
+            <input type="number" id="postProcessingMin" placeholder="e.g. 10" value="0" step="1"/>
+            <div class="muted">Charged at 200 AED/h</div>
+        </div>
     </div>
 
-    <script>
-        function calculateCost() {
-            let materialCost = parseFloat(document.getElementById("materialCost").value);
-            let weight = parseFloat(document.getElementById("weight").value);
-            let printTime = parseFloat(document.getElementById("printTime").value);
-            let postProcessing = parseFloat(document.getElementById("postProcessing").value);
-            let packaging = parseFloat(document.getElementById("packaging").value);
-            let profitMargin = parseFloat(document.getElementById("profitMargin").value) / 100;
-            let shopifyFee = document.getElementById("shopifyFee").checked;
-            let vat = document.getElementById("vat").checked;
-            let extraFees = parseFloat(document.getElementById("extraFees").value) || 0;
+    <label>Printer</label>
+    <select id="printer">
+        <option value="Bambu Lab X1-Carbon Combo">Bambu Lab X1-Carbon Combo (1.66 AED/h)</option>
+        <option value="Bambu Lab A1 Combo">Bambu Lab A1 Combo (1.30 AED/h)</option>
+        <option value="Ankermake M5">Ankermake M5 (0.83 AED/h)</option>
+        <option value="Ankermake M5C">Ankermake M5C (0.67 AED/h)</option>
+        <option value="Creality Hi">Creality Hi (0.93 AED/h)</option>
+    </select>
 
-            // Base cost
-            let cost = (materialCost / 1000) * weight + (printTime * 0.7);
-            
-            // Add failure rate (10%)
-            cost *= 1.1;
+    <label>Packaging Cost (AED):</label>
+    <input type="number" id="packagingCost" placeholder="e.g. 3" value="0" step="0.01"/>
 
-            // Add extra fees
-            cost += extraFees;
-            
-            // Add post-processing time (converted to AED)
-            cost += (postProcessing / 60) * 200;
+    <label>Extra Fees (AED):</label>
+    <input type="number" id="extraFees" placeholder="0" value="0" step="0.01"/>
 
-            // Packaging fees
-            cost += packaging;
-            
-            // Calculate selling price with profit margin
-            let sellingPrice = cost * (1 + profitMargin);
+    <label>Profit Margin:</label>
+    <select id="profitMargin">
+        <option value="60">60%</option>
+        <option value="50">50%</option>
+        <option value="40">40%</option>
+        <option value="30">30%</option>
+    </select>
 
-            // Add Shopify fee if selected
-            if (shopifyFee) sellingPrice *= 1.045;
+    <div class="checkbox-group">
+        <input type="checkbox" id="shopifyFee"/>
+        <label for="shopifyFee">Include Shopify Fee (4.4%)</label>
+    </div>
 
-            // Add VAT if selected
-            if (vat) sellingPrice *= 1.05;
+    <div class="checkbox-group">
+        <input type="checkbox" id="vat"/>
+        <label for="vat">Include VAT (5%)</label>
+    </div>
 
-            // Display results
-            document.getElementById("totalCost").innerText = cost.toFixed(2);
-            document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2);
-        }
+    <button onclick="calculateCost()">Calculate</button>
 
-        // Replace the old Google Apps Script fetch with SheetDB
-        function saveInquiry() {
-            let partName  = document.getElementById("partName").value.trim();
-            let material     = document.getElementById("material").value.trim();
-            let weight    = document.getElementById("weight").value.trim();
-            let printTime = document.getElementById("printTime").value.trim();
-            let size  = document.getElementById("packaging").value.trim();
-            let extraFees = document.getElementById("extraFees").value.trim();
-            let cost      = document.getElementById("totalCost").innerText.trim();
-            let profitMargin    = document.getElementById("profitMargin").value.trim();
-            let price     = document.getElementById("sellingPrice").innerText.trim();
-            
-            // SheetDB endpoint (make sure your Sheet column headers match below!)
-            const sheetdbUrl = "https://sheetdb.io/api/v1/0p74ykwl0aai4";
+    <h3>Results:</h3>
+    <p>Total Cost: <strong id="totalCost">-</strong> AED</p>
+    <p>Selling Price: <strong id="sellingPrice">-</strong> AED</p>
 
-            // Format data according to SheetDB docs
-            // "data" should be an array of objects, each matching your sheet columns
-            const payload = {
-                data: [
-                    {
-                        "Part Name": partName,
-                        "Material": material,
-                        "Weight (g)": weight,
-                        "Time (h)": printTime,
-                        "Package Cost": size,
-                        "Extra Fees (AED)": extraFees,
-                        "Cost (AED)": cost,
-                        "Margin": profitMargin,
-                        "Price (AED)": price,
-                        "Date": new Date().toLocaleDateString()
-                    }
-                ]
-            };
+    <label>Part Name:</label>
+    <input type="text" id="partName" placeholder="Enter part name"/>
 
-            fetch(sheetdbUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("SheetDB response:", data);
-                alert("Saved successfully!");
-            })
-            .catch(error => {
-                console.error("Fetch Error:", error);
-                alert("Error saving data!");
-            });
-        }
-    </script>
+    <button onclick="saveInquiry()">Save to Google Sheets</button>
+</div>
+
+<div class="reference-table">
+    <h3>Reference Values</h3>
+    <p>Printer Machine Rate: chosen from list (AED/h)</p>
+    <p>Post-Processing Rate: 200 AED/h</p>
+    <p>Failure Rate: 10%</p>
+    <p>Shopify Fee: 4.4% (if selected)</p>
+    <p>VAT: 5% (if selected)</p>
+</div>
+
+<script>
+    // Depreciation / machine rate (AED per hour) by printer
+    const PRINTER_RATES = {
+        "Bambu Lab X1-Carbon Combo": 1.66,
+        "Bambu Lab A1 Combo": 1.30,
+        "Ankermake M5": 0.83,
+        "Ankermake M5C": 0.67,
+        "Creality Hi": 0.93
+    };
+
+    function valNum(id) {
+        const v = parseFloat(document.getElementById(id).value);
+        return isNaN(v) ? 0 : v;
+    }
+
+    function calculateCost() {
+        const materialCostPerKg = valNum("materialCost");
+        const weightG            = valNum("weight");
+        const printTimeH         = valNum("printTime");
+        const prepTimeH          = valNum("prepTime");
+        const postProcMin        = valNum("postProcessingMin");
+        const packagingCost      = valNum("packagingCost");
+        const extraFees          = valNum("extraFees");
+
+        const printerName        = document.getElementById("printer").value;
+        const printerRate        = PRINTER_RATES[printerName] || 0;
+
+        const profitMargin       = parseFloat(document.getElementById("profitMargin").value) / 100;
+        const includeShopify     = document.getElementById("shopifyFee").checked;
+        const includeVAT         = document.getElementById("vat").checked;
+
+        // Costs
+        const materialCost = (materialCostPerKg / 1000) * weightG; // AED
+        const machineHours = printTimeH + prepTimeH;               // h
+        const machineCost  = machineHours * printerRate;           // AED
+        const postProcCost = (postProcMin / 60) * 200;             // AED @ 200 AED/h
+
+        // Base cost before margin/fees
+        let cost = materialCost + machineCost;
+
+        // Failure rate (10%)
+        cost *= 1.10;
+
+        // Add the rest
+        cost += postProcCost + packagingCost + extraFees;
+
+        // Selling price with margin
+        let sellingPrice = cost * (1 + profitMargin);
+
+        // Shopify fee (4.4%) applies on the charge
+        if (includeShopify) sellingPrice *= 1.044;
+
+        // VAT (5%)
+        if (includeVAT) sellingPrice *= 1.05;
+
+        // Display
+        document.getElementById("totalCost").innerText = cost.toFixed(2);
+        document.getElementById("sellingPrice").innerText = sellingPrice.toFixed(2);
+    }
+
+    // Save to SheetDB
+    function saveInquiry() {
+        const partName      = document.getElementById("partName").value.trim();
+        const material      = document.getElementById("material").value.trim();
+        const weight        = document.getElementById("weight").value.trim();
+        const printTime     = document.getElementById("printTime").value.trim();
+        const prepTime      = document.getElementById("prepTime").value.trim();
+        const postProcMin   = document.getElementById("postProcessingMin").value.trim();
+        const packagingCost = document.getElementById("packagingCost").value.trim();
+        const extraFees     = document.getElementById("extraFees").value.trim();
+        const profitMargin  = document.getElementById("profitMargin").value.trim();
+        const printer       = document.getElementById("printer").value.trim();
+
+        const cost  = document.getElementById("totalCost").innerText.trim();
+        const price = document.getElementById("sellingPrice").innerText.trim();
+
+        const sheetdbUrl = "https://sheetdb.io/api/v1/0p74ykwl0aai4";
+
+        const payload = {
+            data: [{
+                "Part Name": partName,
+                "Material": material,
+                "Printer": printer,
+                "Weight (g)": weight,
+                "Print Time (h)": printTime,
+                "Prep Time (h)": prepTime,
+                "Post-Processing (min)": postProcMin,
+                "Packaging Cost (AED)": packagingCost,
+                "Extra Fees (AED)": extraFees,
+                "Cost (AED)": cost,
+                "Margin": profitMargin,
+                "Price (AED)": price,
+                "Date": new Date().toLocaleDateString()
+            }]
+        };
+
+        fetch(sheetdbUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            console.log("SheetDB response:", data);
+            alert("Saved successfully!");
+        })
+        .catch(err => {
+            console.error("Fetch Error:", err);
+            alert("Error saving data!");
+        });
+    }
+</script>
 
 </body>
 </html>
