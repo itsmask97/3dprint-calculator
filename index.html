@@ -187,7 +187,7 @@
 
     // Costs
     const materialCost = (materialCostPerKg / 1000) * weightG;   // AED
-    const machineCost  = printTimeH * printerRate;                // AED (depreciation while printing)
+    const machineCost  = printTimeH * (printerRate + 0.08);                // AED (depreciation while printing)
     const laborCost    = ((prepTimeH + postProcH)/60) * laborRate;     // AED
 
     let cost = materialCost + machineCost + laborCost;
