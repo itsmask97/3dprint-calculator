@@ -84,12 +84,12 @@
 
   <div class="row-2">
     <div>
-      <label>Preparation (h):</label>
-      <input type="number" id="prepTime" value="0" step="0.01" placeholder="e.g. 0.25"/>
+      <label>Preparation (min):</label>
+      <input type="number" id="prepTime" value="0" step="0.01" placeholder="e.g. 5"/>
     </div>
     <div>
-      <label>Post-Processing (h):</label>
-      <input type="number" id="postProcessingH" value="0" step="0.01" placeholder="e.g. 0.5"/>
+      <label>Post-Processing (min):</label>
+      <input type="number" id="postProcessingH" value="0" step="0.01" placeholder="e.g. 10"/>
     </div>
   </div>
 
@@ -188,7 +188,7 @@
     // Costs
     const materialCost = (materialCostPerKg / 1000) * weightG;   // AED
     const machineCost  = printTimeH * printerRate;                // AED (depreciation while printing)
-    const laborCost    = (prepTimeH + postProcH) * laborRate;     // AED
+    const laborCost    = ((prepTimeH + postProcH)/60) * laborRate;     // AED
 
     let cost = materialCost + machineCost + laborCost;
     cost *= 1.10; // Failure rate 10%
