@@ -106,8 +106,13 @@
     <option value="Creality Hi">Creality Hi (0.93 AED/h)</option>
   </select>
 
-  <label>Packaging Cost (AED):</label>
-  <input type="number" id="packagingCost" value="0" step="0.01"/>
+  <label>Packaging</label>
+  <select id="packagingCost">
+    <option value="3">Small (3 AED)</option>
+    <option value="5">Medium (5 AED)</option>
+    <option value="7">Large (7 AED)</option>
+    <option value="15">Special (15 AED)</option>
+  </select>
 
   <label>Extra Fees (AED):</label>
   <input type="number" id="extraFees" value="0" step="0.01"/>
@@ -172,8 +177,8 @@
     const materialCostPerKg = num("materialCost");
     const weightG           = num("weight");
     const printTimeH        = num("printTime");
-    const prepTimeH         = num("prepTime");
-    const postProcH         = num("postProcessingH");
+    const prepTimeMin       = num("prepTime");
+    const postProcMin       = num("postProcessingH");
     const laborRate         = num("laborRate");
     const packagingCost     = num("packagingCost");
     const extraFees         = num("extraFees");
@@ -187,8 +192,8 @@
 
     // Costs
     const materialCost = (materialCostPerKg / 1000) * weightG;   // AED
-    const machineCost  = printTimeH * (printerRate + 0.08);                // AED (depreciation while printing)
-    const laborCost    = ((prepTimeH + postProcH)/60) * laborRate;     // AED
+    const machineCost  = printTimeH * (printerRate + 0.08);               // AED (depreciation while printing)
+    const laborCost    = ((prepTimeMin + postProcMin)/60) * laborRate;  // AED
 
     let cost = materialCost + machineCost + laborCost;
     cost *= 1.10; // Failure rate 10%
@@ -212,8 +217,8 @@
         "Printer": document.getElementById("printer").value.trim(),
         "Weight (g)": document.getElementById("weight").value.trim(),
         "Print Time (h)": document.getElementById("printTime").value.trim(),
-        "Prep Time (h)": document.getElementById("prepTime").value.trim(),
-        "Post-Processing (h)": document.getElementById("postProcessingH").value.trim(),
+        "Prep Time (min)": document.getElementById("prepTime").value.trim(),
+        "Post-Processing (min)": document.getElementById("postProcessingH").value.trim(),
         "Labor Rate (AED/h)": document.getElementById("laborRate").value.trim(),
         "Packaging Cost (AED)": document.getElementById("packagingCost").value.trim(),
         "Extra Fees (AED)": document.getElementById("extraFees").value.trim(),
